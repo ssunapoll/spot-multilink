@@ -3,124 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SPOT STORE — Multilink</title>
+  <title>SPOT STORE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#ffffff;           /* белый фон */
-      --card:#f5f7fa;         /* светлая карта (на будущее) */
-      --muted:#61646b;        /* вторичный текст */
-      --brand:#0b0c10;        /* базовый тёмный */
-      --brand-2:#92f22e;      /* акцент */
-      --radius:18px;
+    :root {
+      --bg: #ffffff;
+      --text: #0b0c10;
     }
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0}
-    body{background:var(--bg); color:#0b0c10; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif}
 
-    /* header styles */
-    .logo-top{position:sticky; top:0; background:#fff; border-bottom:1px solid rgba(0,0,0,.06); z-index:5}
-    .logo-top .wrap{max-width:1080px; margin:0 auto; padding:16px 20px}
-    #spotLogo{height:56px; width:auto; display:block}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-    /* нижний контент пока скрыт — подключим позже */
-    .card{display:none}
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #fff;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 16px 0;
+      display: flex;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    #spotLogo {
+      height: 72px;
+      width: auto;
+      display: block;
+    }
   </style>
-  <!-- 1) грузим библиотеку QR ДО нашего кода; defer гарантирует порядок -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js" defer></script>
-  <!-- 2) наш код также defer → выполнится после библиотеки -->
-  <script defer>
-    // ===== конфиг (заменишь под себя) =====
-    const CONFIG = {
-      defaultLang: 'uk',
-      portrait: 'https://images.unsplash.com/photo-1544006659-f0b21884ce1d?q=80&w=800&auto=format&fit=crop',
-      url: 'https://spot.store.example/multilink', // сюда вставишь реальный URL после публикации
-      brandVersion: 'SS2026',
-      links: {
-        instagram: 'https://instagram.com/spot.store',
-        website: 'https://spotstore.example',
-        telegram: 'https://t.me/spot_store',
-        phone: 'tel:+380000000000'
-      }
-    };
-
-    // ===== небольшая утилита логгера тестов =====
-    const tests = [];
-    function test(name, fn){
-      try{ fn(); tests.push({name, ok:true}); }
-      catch(e){ console.error('[test fail]', name, e); tests.push({name, ok:false, err:String(e)}); }
-    }
-    function report(){
-      const ok = tests.every(t=>t.ok);
-      console[ok?'log':'warn']('[self-test]', tests);
-      const el = document.getElementById('test-report');
-      if(el){ el.textContent = JSON.stringify(tests); }
-    }
-
-    // ===== инициализация =====
-    document.addEventListener('DOMContentLoaded', () => {
-      // верхний логотип — ничего делать не нужно
-
-      // проверяем наличие библиотеки QR прежде чем пользоваться
-      test('qrcode library loaded', () => {
-        if(typeof window.qrcode === 'undefined') throw new Error('window.qrcode is undefined');
-      });
-
-      // безопасная генерация QR (элемент может отсутствовать/быть скрыт — не падаем)
-      const qrCanvas = document.getElementById('qrc');
-      if (qrCanvas && typeof window.qrcode !== 'undefined') {
-        const qr = window.qrcode(0, 'L');
-        qr.addData(CONFIG.url || location.href);
-        qr.make();
-        // рисуем в <canvas>
-        const cvs = document.createElement('canvas');
-        const size = 180; cvs.width = cvs.height = size;
-        const ctx = cvs.getContext('2d');
-        const count = qr.getModuleCount();
-        const scale = Math.floor(size / count);
-        for (let r = 0; r < count; r++) {
-          for (let c = 0; c < count; c++) {
-            ctx.fillStyle = qr.isDark(r, c) ? '#000' : '#fff';
-            ctx.fillRect(c*scale, r*scale, scale, scale);
-          }
-        }
-        // если обёртка существует, добавим
-        const wrap = qrCanvas.parentElement || qrCanvas;
-        wrap.innerHTML = ''; wrap.appendChild(cvs);
-      }
-
-      // тест на создание холста
-      test('qr canvas created when target exists', () => {
-        const area = document.querySelector('.qr');
-        if(!area) return; // допустимо, если карточка скрыта
-        const cnv = area.querySelector('canvas');
-        if(!cnv) throw new Error('no canvas appended for QR');
-      });
-
-      report();
-    });
-  </script>
 </head>
 <body>
-  <!-- TOP LOGO ONLY (step 1) -->
-  <header class="logo-top">
-    <div class="wrap">
-      <img id="spotLogo" alt="SPOT logo" src="/spot.png" />
-    </div>
+  <header>
+    <img id="spotLogo" src="spot.png" alt="SPOT logo" />
   </header>
-
-  <!-- скрытый пока блок (оставил разметку, чтобы QR-тесты не падали) -->
-  <main class="card" id="app">
-    <aside class="left">
-      <div class="portrait" id="portrait" title="Add your image in JS"></div>
-      <div class="badge"><span>pass card</span><span style="opacity:.6">/</span><span id="brandVersion">SS2026</span></div>
-      <div class="qr"><canvas id="qrc"></canvas></div>
-    </aside>
-  </main>
-
-  <!-- невидимый отчёт тестов (на всякий) -->
-  <div id="test-report" style="display:none"></div>
 </body>
 </html>
